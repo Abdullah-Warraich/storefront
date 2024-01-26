@@ -11,9 +11,43 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from .filters import ProductFilter
-from .models import Cart, CartItem, Collection, Customer, Product, Review
+from .models import Cart, CartItem, Collection, Customer, Product, Review, Promotion
 from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializer, CollectionSerializer, CustomerSerializer, ProductSerializer, ReviewSerializer, UpdateCartItemSerializer
+from rest_framework.decorators import api_view
+from django.shortcuts import redirect
 
+
+@api_view(['GET'])
+def filterByRemark(request, remark):
+    if remark == 'special':
+        products = Product.objects.filter(remarks = 'S')
+        myserialzer = ProductSerializer(products, many=True)
+        serialzered_data = myserialzer.data
+        print(serialzered_data)
+        return Response({'Records': serialzered_data})
+    elif remark == 'new':
+        products = Product.objects.filter(remarks = 'N')
+        myserialzer = ProductSerializer(products, many=True)
+        serialzered_data = myserialzer.data
+        print(serialzered_data)
+        return Response({'Records': serialzered_data})
+    elif remark == 'popular':
+        products = Product.objects.filter(remarks = 'P')
+        myserialzer = ProductSerializer(products, many=True)
+        serialzered_data = myserialzer.data
+        print(serialzered_data)
+        return Response({'Records': serialzered_data})
+    
+@api_view(['GET'])
+def filterByPromotion(request, promo):
+    if promo == "NewYear":
+        products_with_promotion = Product.objects.filter(promotions__description='Happy New Year\\r\\nSpecial Deal \\r\\nSave 30%')
+        data = ProductSerializer(products_with_promotion, many=True).data
+        updated = []
+        for d in data:
+            updated.append({'id': d.get('id'), 'title': 'Happy New Year\\r\\nSpecial Deal \\r\\nSave 30%', 'short_des': d.get('description'),
+                            'image': d.get('image', ''), 'created_at': d.get('created_at', ''), 'updated_at': d.get('last_update', '')})
+        return Response({'Records': updated})
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
@@ -34,7 +68,6 @@ class ProductViewSet(ModelViewSet):
             return Response({'error': 'Product cannot be deleted because it is associated with an order item.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(

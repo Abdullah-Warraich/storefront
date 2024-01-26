@@ -8,6 +8,7 @@ router.register('products', views.ProductViewSet, basename='products')
 router.register('collections', views.CollectionViewSet)
 router.register('carts', views.CartViewSet)
 router.register('customers', views.CustomerViewSet)
+# router.register('products/<str:remark>', views.filterByRemark)
 
 products_router = routers.NestedDefaultRouter(
     router, 'products', lookup='product')
@@ -18,4 +19,5 @@ carts_router = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
 carts_router.register('items', views.CartItemViewSet, basename='cart-items')
 
 # URLConf
-urlpatterns = router.urls + products_router.urls + carts_router.urls
+urlpatterns = router.urls + products_router.urls + carts_router.urls + [path('productsremarks/<str:remark>', views.filterByRemark),
+                                                                        path('promotion/<str:promo>', views.filterByPromotion),]

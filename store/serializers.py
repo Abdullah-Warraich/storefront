@@ -1,25 +1,31 @@
 from decimal import Decimal
-from store.models import Cart, CartItem, Customer, Product, Collection, Review
+from store.models import Cart, CartItem, Customer, Product, Collection, Review, Promotion
 from rest_framework import serializers
 
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['id', 'title', 'products_count']
+        fields = ['id', 'title', 'categoryImg', 'created_at', 'updated_at', 'products_count']
 
     products_count = serializers.IntegerField(read_only=True)
 
+class PromotionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Promotion
+        fields = ['id', 'description', 'discount']
+
 
 class ProductSerializer(serializers.ModelSerializer):
+    collection = CollectionSerializer(read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'slug', 'inventory',
-                  'unit_price', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'description', 'image', 'inventory', 'unit_price', 'price_with_tax',
+                  'collection', 'star', 'remarks', 'created_at', 'last_update', 'color', 'size']
 
     price_with_tax = serializers.SerializerMethodField(
         method_name='calculate_tax')
-
+    
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
 

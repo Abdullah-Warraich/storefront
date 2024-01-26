@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from uuid import uuid4
 
@@ -9,9 +9,16 @@ class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
 
+    def __str__(self):
+        return self.description
+
+
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
+    categoryImg = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     featured_product = models.ForeignKey(
         'Product', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
 
@@ -23,15 +30,31 @@ class Collection(models.Model):
 
 
 class Product(models.Model):
+    REMARK_POPULAR = 'P'
+    REMARK_NEW = 'N'
+    REMARK_SPECIAL = 'S'
+
+    REMARK_CHOICES = [
+        (REMARK_POPULAR, 'Popluar'),
+        (REMARK_NEW, 'New'),
+        (REMARK_SPECIAL, 'Special'),
+    ]
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     description = models.TextField(null=True, blank=True)
+    color = models.CharField(max_length=255, default='')
+    size = models.CharField(max_length=255, default='')
     unit_price = models.DecimalField(
         max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(1)])
     inventory = models.IntegerField(validators=[MinValueValidator(0)])
     last_update = models.DateTimeField(auto_now=True)
+    image = models.CharField(max_length=255, default='')
+    star = models.FloatField(default = 0, validators=[MaxValueValidator(5), MinValueValidator(0)])
+    created_at = models.DateTimeField(auto_now=True)
+    remarks = models.CharField(
+        max_length=1, choices=REMARK_CHOICES, default=REMARK_NEW)
     collection = models.ForeignKey(
         Collection, on_delete=models.PROTECT, related_name='products')
     promotions = models.ManyToManyField(Promotion, blank=True)
