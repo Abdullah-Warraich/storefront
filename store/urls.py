@@ -20,4 +20,9 @@ carts_router.register('items', views.CartItemViewSet, basename='cart-items')
 
 # URLConf
 urlpatterns = router.urls + products_router.urls + carts_router.urls + [path('productsremarks/<str:remark>', views.filterByRemark),
-                                                                        path('promotion/<str:promo>', views.filterByPromotion),]
+                                                                        path('promotion/<str:promo>', views.filterByPromotion),
+                                                                        path('productsSearch/<str:key>', views.search),
+                                                                        path('scraped_data', views.scraped_data),
+                                                                        path('keys', views.keys),
+                                                                        path('cats', view=views.categories),
+                                                                        path('scrapedProduct/<int:pid>', view=views.productscraped)]

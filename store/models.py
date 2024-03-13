@@ -65,6 +65,34 @@ class Product(models.Model):
     class Meta:
         ordering = ['title']
 
+class Keys(models.Model):
+    SearchKey = models.CharField(max_length=255)
+
+class ProductScraped(models.Model):
+    pid = models.DecimalField(max_digits=20, decimal_places=0, validators=[MinValueValidator(1)])
+    website = models.CharField(max_length=255)
+    key = models.ForeignKey(
+        Keys, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    url = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    color = models.CharField(max_length=255, default='')
+    size = models.CharField(max_length=255, default='')
+    unit_price = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        validators=[MinValueValidator(1)])
+    inventory = models.IntegerField(validators=[MinValueValidator(0)])
+    last_update = models.DateField(auto_now=True)
+    image = models.CharField(max_length=255, default='')
+    star = models.FloatField(default = 0, validators=[MaxValueValidator(5), MinValueValidator(0)])
+    created_at = models.DateField(auto_now=True)
+    remarks = models.CharField(max_length=5)
+    collection = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.title
+
 
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from store.models import Cart, CartItem, Customer, Product, Collection, Review, Promotion
+from store.models import Cart, CartItem, Customer, Product, Collection, Review, Promotion, ProductScraped, Keys
 from rest_framework import serializers
 
 
@@ -15,6 +15,10 @@ class PromotionSerializer(serializers.ModelSerializer):
         model = Promotion
         fields = ['id', 'description', 'discount']
 
+class KeysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Keys
+        fields = ['id', 'SearchKey']
 
 class ProductSerializer(serializers.ModelSerializer):
     collection = CollectionSerializer(read_only=True)
@@ -22,6 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'title', 'description', 'image', 'inventory', 'unit_price', 'price_with_tax',
                   'collection', 'star', 'remarks', 'created_at', 'last_update', 'color', 'size']
+        
 
     price_with_tax = serializers.SerializerMethodField(
         method_name='calculate_tax')
